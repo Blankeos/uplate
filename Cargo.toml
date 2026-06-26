@@ -1,0 +1,23 @@
+[package]
+name = "uplate"
+version = "0.1.0"
+edition = "2021"
+description = "Clone detached boilerplates and safely upgrade them with conservative 3-way merges."
+license = "MIT"
+repository = "https://github.com/uplate/uplate"
+
+[dependencies]
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4.5", features = ["derive"] }
+cliclack = "0.5"
+ctrlc = "3"
+json_comments = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tempfile = "3.12"
+url = "2.5"
+walkdir = "2.5"
+
+[dev-dependencies]
+pretty_assertions = "1.4"
