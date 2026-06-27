@@ -6,7 +6,8 @@ use crate::{
 };
 use anyhow::{bail, Context, Result};
 use chrono::Utc;
-use cliclack::{input, intro, outro, spinner};
+use cliclack::{input, intro, log, note, outro, spinner};
+use console::style;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -67,9 +68,7 @@ fn create(source_arg: Option<String>, destination_arg: Option<PathBuf>) -> Resul
     match result {
         Ok(commit) => {
             progress.stop("Project created");
-            println!("Created {} from {}", destination.display(), source_input);
-            println!("Base template commit: {}", short_commit(&commit));
-            println!("Review the generated files, then commit them with git.");
+            print_create_success(&destination, &source_input, &commit)?;
             Ok(())
         }
         Err(err) => {
@@ -431,4 +430,21 @@ fn missing_base_message(reference: &str, remote: &str) -> String {
 
 fn short_commit(commit: &str) -> String {
     commit.chars().take(12).collect()
+}
+
+fn print_create_success(destination: &Path, source_input: &str, commit: &str) -> Result<()> {
+    let headline = format!(
+        "Created {} from {}",
+        style(destination.display()).cyan().bold(),
+        style(source_input).green(),
+    );
+    log::step(headline).context("failed to render create summary")?;
+
+    let details = format!(
+        "{}\n{}",
+        style(format!("Base template commit: {}", short_commit(commit))).dim(),
+        style("Review the generated files, then commit them with git.").dim(),
+    );
+    note("", details).context("failed to render create details")?;
+    Ok(())
 }
