@@ -13,6 +13,10 @@ pub struct ParsedSource {
     pub ref_name: Option<String>,
 }
 
+pub fn validate_source_shape(input: &str) -> Result<()> {
+    parse_source(input).map(|_| ())
+}
+
 fn reject_raw_path_traversal(input: &str) -> Result<()> {
     if input == "."
         || input == ".."
@@ -67,7 +71,9 @@ pub fn parse_source(input: &str) -> Result<ParsedSource> {
 fn parse_github_shorthand(original: &str, value: &str) -> Result<ParsedSource> {
     let parts = split_path(value);
     if parts.len() < 2 {
-        bail!("source must look like owner/repo or owner/repo/path: {original}");
+        bail!(
+            "{original} is not a valid template source. Expected owner/repo, owner/repo/path, github:owner/repo/path, or a git URL."
+        );
     }
     let owner = parts[0].to_string();
     let repo = trim_git_suffix(parts[1]).to_string();
@@ -284,5 +290,11 @@ mod tests {
         assert!(parse_source("owner/repo/../secret").is_err());
         assert!(parse_source("https://github.com/owner/repo/tree/main/../secret").is_err());
         assert!(parse_source("https://gitlab.com/group/project/-/tree/main/../secret").is_err());
+    }
+
+    #[test]
+    fn rejects_single_word_source() {
+        let error = parse_source("adot").unwrap_err().to_string();
+        assert!(error.contains("adot is not a valid template source"));
     }
 }

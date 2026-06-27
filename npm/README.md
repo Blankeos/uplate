@@ -17,6 +17,8 @@ Tools like `gitpick` clone boilerplates cleanly, but that's it — you're on you
 
 ## Install
 
+> Requires git. That's it. No install needed? `npx uplate` works too.
+
 ```sh
 brew install blankeos/tap/uplate # Homebrew (macOS/Linux)
 npm install -g uplate            # or npm
@@ -25,8 +27,6 @@ cargo binstall uplate            # or cargo-binstall (prebuilt binary, faster)
 cargo install uplate             # or cargo (build from source)
 curl -sSL https://raw.githubusercontent.com/uplate/uplate/main/install.sh | sh # or linux/macos (via curl)
 ```
-
-> Requires git. That's it. No install needed? `npx uplate` works too.
 
 ## Quick start
 

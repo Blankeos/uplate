@@ -362,15 +362,25 @@ fn prompt_create_args(
     source_arg: Option<String>,
     destination_arg: Option<PathBuf>,
 ) -> Result<(String, PathBuf)> {
+    if let Some(source) = source_arg.as_deref() {
+        source::validate_source_shape(source)?;
+    }
+
     if source_arg.is_some() && destination_arg.is_some() {
         return Ok((source_arg.unwrap(), destination_arg.unwrap()));
     }
 
     intro("Create from boilerplate")?;
     let source = match source_arg {
-        Some(value) => value,
+        Some(value) => {
+            log::info(format!("Template source: {}", style(&value).cyan()))?;
+            value
+        }
         None => input("Template source repo/path")
             .placeholder("owner/repo/path or https://gitlab.com/group/project")
+            .validate(|value: &String| {
+                source::validate_source_shape(value).map_err(|err| err.to_string())
+            })
             .interact()?,
     };
     let destination = match destination_arg {
@@ -390,15 +400,25 @@ fn prompt_adopt_args(
     source_arg: Option<String>,
     base_arg: Option<String>,
 ) -> Result<(String, String)> {
+    if let Some(source) = source_arg.as_deref() {
+        source::validate_source_shape(source)?;
+    }
+
     if source_arg.is_some() && base_arg.is_some() {
         return Ok((source_arg.unwrap(), base_arg.unwrap()));
     }
 
     intro("Adopt existing project")?;
     let source = match source_arg {
-        Some(value) => value,
+        Some(value) => {
+            log::info(format!("Template source: {}", style(&value).cyan()))?;
+            value
+        }
         None => input("Template source repo/path")
             .placeholder("owner/repo/path or https://gitlab.com/group/project")
+            .validate(|value: &String| {
+                source::validate_source_shape(value).map_err(|err| err.to_string())
+            })
             .interact()?,
     };
     let base = match base_arg {
