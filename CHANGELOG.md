@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Chores
 
+- Remove publish npm package by Blankeos
 - Add cargo-dist powered release pipeline and distribution packaging by Blankeos
 
 ### Features
