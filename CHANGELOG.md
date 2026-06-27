@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
+- Release yml by Blankeos
 - Validate template source shape before execution by Blankeos
 
 ### Chores
@@ -14,6 +15,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
+- Used update-cli for npm release by Blankeos
 - Improve create command success UX by Blankeos
 - Add initial uplate CLI for detached boilerplate workflows by Blankeos
 
