@@ -259,37 +259,46 @@ fn simulate_upgrade(
 
     snapshot::copy_template_contents(&base_snapshot.template_dir, &merge_repo)?;
     git::add_all(&merge_repo)?;
-    git::commit_all(&merge_repo, "uplate base")?;
-    let base_commit = git::rev_parse(&merge_repo, "HEAD")?;
+    let base_tree = git::write_tree(&merge_repo)?;
 
-    git::run(Some(&merge_repo), ["checkout", "--quiet", "-b", "ours"])?;
     snapshot::replace_with_git_tracked_project(project_root, &merge_repo)?;
     git::add_all(&merge_repo)?;
-    git::commit_all(&merge_repo, "uplate ours")?;
+    let ours_tree = git::write_tree(&merge_repo)?;
 
-    git::run(
-        Some(&merge_repo),
-        ["checkout", "--quiet", "-b", "theirs", &base_commit],
-    )?;
     snapshot::replace_with_template(&latest_snapshot.template_dir, &merge_repo)?;
     git::add_all(&merge_repo)?;
-    git::commit_all(&merge_repo, "uplate theirs")?;
+    let theirs_tree = git::write_tree(&merge_repo)?;
 
-    git::run(Some(&merge_repo), ["checkout", "--quiet", "ours"])?;
-    let (merge_ok, merge_out) = git::run_allow_failure(
-        Some(&merge_repo),
-        ["merge", "--no-commit", "--no-ff", "theirs"],
-    )?;
+    let (merge_ok, merge_out) =
+        git::merge_trees(&merge_repo, &base_tree, &ours_tree, &theirs_tree)?;
     if !merge_ok {
         bail!(
             "Cannot safely upgrade.\n\nThe upgrade was simulated in a temporary merge and conflicts were detected. Your working tree was left untouched.\n\n{}\n\nRun `uplate upgrade --prompt` for a coding-agent prompt, or resolve manually by comparing your project against the latest boilerplate.",
-            merge_out.stderr
+            merge_conflict_output(&merge_out)
         );
     }
+    let merged_tree = merge_out.stdout.trim();
 
-    let diff_stat = git::run_raw(Some(&merge_repo), ["diff", "--stat", "HEAD"])?.stdout;
-    let patch = git::run_raw(Some(&merge_repo), ["diff", "--binary", "HEAD"])?.stdout;
+    let diff_stat = git::run_raw(
+        Some(&merge_repo),
+        ["diff", "--stat", &ours_tree, merged_tree],
+    )?
+    .stdout;
+    let patch = git::run_raw(
+        Some(&merge_repo),
+        ["diff", "--binary", &ours_tree, merged_tree],
+    )?
+    .stdout;
     Ok(UpgradeSimulation { patch, diff_stat })
+}
+
+fn merge_conflict_output(output: &git::GitOutput) -> String {
+    let details = format!("{}{}", output.stdout, output.stderr);
+    if details.trim().is_empty() {
+        "git merge-tree reported conflicts without additional details.".to_string()
+    } else {
+        details
+    }
 }
 
 fn print_agent_prompt(config: &UplateConfig, latest: &str, error: &str) {
