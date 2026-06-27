@@ -21,7 +21,7 @@ body = """
     {% if commit.remote.username %} by @{{ commit.remote.username }}\
     {%- elif commit.author.name %} by {{ commit.author.name }}\
     {% endif %}\
-    {% if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}](https://github.com/uplate/uplate/pull/{{ commit.remote.pr_number }})\
+    {% if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}](https://github.com/Blankeos/uplate/pull/{{ commit.remote.pr_number }})\
     {% endif %}\
 {% endfor %}
 {% endfor %}\
@@ -29,7 +29,7 @@ body = """
 
 ### New Contributors
 {% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
-- @{{ contributor.username }} made their first contribution{% if contributor.pr_number %} in [#{{ contributor.pr_number }}](https://github.com/uplate/uplate/pull/{{ contributor.pr_number }}){% endif %}
+ - @{{ contributor.username }} made their first contribution{% if contributor.pr_number %} in [#{{ contributor.pr_number }}](https://github.com/Blankeos/uplate/pull/{{ contributor.pr_number }}){% endif %}
 {%- endfor %}
 {%- endif %}\n
 """
