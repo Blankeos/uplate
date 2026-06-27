@@ -296,8 +296,8 @@ jobs:
           ## Install
 
           ```sh
-          npm install -g uplate            # npm
-          bun install -g uplate            # or bun
+          npm install -g uplate-cli        # npm
+          bun install -g uplate-cli        # or bun
           cargo binstall uplate            # or cargo-binstall (prebuilt binary, faster)
           cargo install uplate             # or cargo (build from source)
           brew install blankeos/tap/uplate # or Homebrew
