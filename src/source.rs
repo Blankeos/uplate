@@ -224,30 +224,36 @@ mod tests {
 
     #[test]
     fn parses_github_shorthand_root() {
-        let parsed = parse_source("carlo/solid-launch").unwrap();
-        assert_eq!(parsed.remote, "https://github.com/carlo/solid-launch.git");
+        let parsed = parse_source("blankeos/solid-launch").unwrap();
+        assert_eq!(
+            parsed.remote,
+            "https://github.com/blankeos/solid-launch.git"
+        );
         assert_eq!(parsed.path, None);
     }
 
     #[test]
     fn parses_github_shorthand_subpath() {
-        let parsed = parse_source("carlo/solid-launch/apps/web").unwrap();
-        assert_eq!(parsed.owner.as_deref(), Some("carlo"));
+        let parsed = parse_source("blankeos/solid-launch/apps/web").unwrap();
+        assert_eq!(parsed.owner.as_deref(), Some("blankeos"));
         assert_eq!(parsed.repo.as_deref(), Some("solid-launch"));
         assert_eq!(parsed.path.as_deref(), Some("apps/web"));
     }
 
     #[test]
     fn parses_github_prefix() {
-        let parsed = parse_source("github:carlo/solid-launch/apps/web").unwrap();
-        assert_eq!(parsed.remote, "https://github.com/carlo/solid-launch.git");
+        let parsed = parse_source("github:blankeos/solid-launch/apps/web").unwrap();
+        assert_eq!(
+            parsed.remote,
+            "https://github.com/blankeos/solid-launch.git"
+        );
         assert_eq!(parsed.path.as_deref(), Some("apps/web"));
     }
 
     #[test]
     fn parses_github_tree_url() {
         let parsed =
-            parse_source("https://github.com/carlo/solid-launch/tree/dev/apps/web").unwrap();
+            parse_source("https://github.com/blankeos/solid-launch/tree/dev/apps/web").unwrap();
         assert_eq!(parsed.ref_name.as_deref(), Some("dev"));
         assert_eq!(parsed.path.as_deref(), Some("apps/web"));
     }
