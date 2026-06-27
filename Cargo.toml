@@ -1,6 +1,6 @@
 [package]
 name = "uplate"
-version = "0.0.1"
+version = "0.0.0"
 edition = "2021"
 description = "CLI for initializing/upgrading boilerplates from git."
 license = "MIT"
