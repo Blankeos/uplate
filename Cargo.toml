@@ -5,6 +5,8 @@ edition = "2021"
 description = "Clone detached boilerplates and safely upgrade them with conservative 3-way merges."
 license = "MIT"
 repository = "https://github.com/uplate/uplate"
+homepage = "https://github.com/uplate/uplate"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0"
@@ -21,3 +23,7 @@ walkdir = "2.5"
 
 [dev-dependencies]
 pretty_assertions = "1.4"
+
+[profile.dist]
+inherits = "release"
+lto = "thin"

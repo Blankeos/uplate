@@ -1,0 +1,2 @@
+- [ ] In the near future, we'll add boilerplate variants. Essentially like nextjs create tools. The user just needs to follow some conventions we specify to help with variants..
+      But the idea is... With `uplate create` it can readily read an existing boilerplate made with uplate to display some choices before creating the boilerplate. This will rely on conventions i.e. an uplate.jsonc that contains "choices", and a generation of some stuff in the boilerplate to define what the choices would look like.

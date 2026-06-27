@@ -1,0 +1,38 @@
+{
+  "name": "uplate",
+  "version": "0.1.0",
+  "description": "Clone detached boilerplates and safely upgrade them with conservative 3-way merges.",
+  "main": "bin.js",
+  "bin": {
+    "uplate": "./bin.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uplate/uplate.git"
+  },
+  "keywords": [
+    "boilerplate",
+    "template",
+    "scaffold",
+    "upgrade",
+    "cli"
+  ],
+  "author": "Uplate",
+  "license": "MIT",
+  "files": [
+    "install.js",
+    "bin.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}
