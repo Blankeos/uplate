@@ -128,35 +128,71 @@ fn status() -> Result<()> {
     let tree_clean = git::is_worktree_clean(&project_root)?;
     let base_available = git::commit_exists_in_remote(&config.source.remote, &config.base.commit)?;
 
-    println!("Source: {}", config.source.input);
-    println!("Remote: {}", config.source.remote);
-    if let Some(path) = &config.source.path {
-        println!("Path: {path}");
-    }
-    println!("Following ref: {}", config.source.ref_name);
-    println!("Current template: {}", short_commit(&config.current.commit));
-    println!("Latest template:  {}", short_commit(&latest));
     println!(
-        "Working tree: {}",
-        if tree_clean { "clean" } else { "dirty" }
+        "{} {}",
+        style("Source:").dim(),
+        style(&config.source.input).cyan()
     );
     println!(
-        "Base commit: {}",
-        if base_available {
-            "available"
+        "{} {}",
+        style("Remote:").dim(),
+        style(&config.source.remote).dim()
+    );
+    if let Some(path) = &config.source.path {
+        println!("{} {}", style("Path:").dim(), style(path).cyan());
+    }
+    println!(
+        "{} {}",
+        style("Following ref:").dim(),
+        style(&config.source.ref_name).cyan()
+    );
+    println!(
+        "{} {}",
+        style("Current template:").dim(),
+        style(short_commit(&config.current.commit)).cyan()
+    );
+    println!(
+        "{} {}",
+        style("Latest template:").dim(),
+        style(short_commit(&latest)).cyan()
+    );
+    println!(
+        "{} {}",
+        style("Working tree:").dim(),
+        if tree_clean {
+            style("clean").green()
         } else {
-            "missing"
+            style("dirty").yellow()
+        }
+    );
+    println!(
+        "{} {}",
+        style("Base commit:").dim(),
+        if base_available {
+            style("available").green()
+        } else {
+            style("missing").red()
         }
     );
 
     if latest == config.current.commit {
-        println!("Status: up to date");
+        println!("{} {}", style("Status:").dim(), style("up to date").green());
     } else {
-        println!("Status: update available");
+        println!(
+            "{} {}",
+            style("Status:").dim(),
+            style("update available").yellow()
+        );
         if tree_clean {
-            println!("Run `uplate upgrade --dry-run` to preview changes.");
+            println!(
+                "{}",
+                style("Run `uplate upgrade --dry-run` to preview changes.").dim()
+            );
         } else {
-            println!("Working tree is dirty, commit or stash before upgrade.");
+            println!(
+                "{}",
+                style("Working tree is dirty, commit or stash before upgrade.").yellow()
+            );
         }
     }
     Ok(())
