@@ -1,6 +1,6 @@
 {
   "name": "uplate",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "CLI for initializing/upgrading boilerplates from git.",
   "main": "bin.js",
   "bin": {
