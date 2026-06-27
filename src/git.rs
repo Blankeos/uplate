@@ -39,24 +39,6 @@ pub fn add_all(repo: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn commit_all(repo: &Path, message: &str) -> Result<()> {
-    run(
-        Some(repo),
-        [
-            "-c",
-            "user.name=uplate",
-            "-c",
-            "user.email=uplate@example.invalid",
-            "commit",
-            "--quiet",
-            "--allow-empty",
-            "-m",
-            message,
-        ],
-    )?;
-    Ok(())
-}
-
 pub fn run_with_input<I, S>(cwd: Option<&Path>, args: I, input: &str) -> Result<GitOutput>
 where
     I: IntoIterator<Item = S>,
@@ -179,6 +161,24 @@ pub fn rev_parse_verify(repo: &Path, reference: &str) -> Result<String> {
         .stdout
         .trim()
         .to_string())
+}
+
+pub fn write_tree(repo: &Path) -> Result<String> {
+    Ok(run(Some(repo), ["write-tree"])?.stdout.trim().to_string())
+}
+
+pub fn merge_trees(repo: &Path, base: &str, ours: &str, theirs: &str) -> Result<(bool, GitOutput)> {
+    run_allow_failure(
+        Some(repo),
+        [
+            "merge-tree",
+            "--write-tree",
+            "--merge-base",
+            base,
+            ours,
+            theirs,
+        ],
+    )
 }
 
 pub fn default_branch(remote: &str) -> Result<String> {

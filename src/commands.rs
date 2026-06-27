@@ -6,7 +6,7 @@ use crate::{
 };
 use anyhow::{bail, Context, Result};
 use chrono::Utc;
-use cliclack::{input, intro, outro};
+use cliclack::{input, intro, outro, spinner};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -29,35 +29,54 @@ fn create(source_arg: Option<String>, destination_arg: Option<PathBuf>) -> Resul
     let (source_input, destination) = prompt_create_args(source_arg, destination_arg)?;
     let parsed = source::parse_source(&source_input)?;
     let ref_name = resolve_follow_ref(&parsed)?;
-    let snapshot = snapshot::materialize_source(&parsed, &ref_name)?;
 
-    ensure_create_destination_is_safe(&destination)?;
-    snapshot::copy_template_contents(&snapshot.template_dir, &destination)?;
+    let progress = spinner();
+    progress.start("Creating project...");
 
-    if !git::is_git_repo(&destination) {
-        git::init_repo(&destination)?;
+    let result = (|| -> Result<String> {
+        progress.set_message("Fetching template...");
+        let snapshot = snapshot::materialize_source(&parsed, &ref_name)?;
+
+        ensure_create_destination_is_safe(&destination)?;
+        progress.set_message("Copying files...");
+        snapshot::copy_template_contents(&snapshot.template_dir, &destination)?;
+
+        if !git::is_git_repo(&destination) {
+            git::init_repo(&destination)?;
+        }
+
+        let config = UplateConfig {
+            schema_version: 1,
+            source: parsed.into_config(ref_name.clone()),
+            base: BaseConfig {
+                commit: snapshot.commit.clone(),
+                ref_name,
+                tag: None,
+            },
+            current: CurrentConfig {
+                commit: snapshot.commit.clone(),
+                upgraded_at: None,
+            },
+            created_at: Utc::now(),
+        };
+        config.write_to(&destination)?;
+
+        Ok(snapshot.commit)
+    })();
+
+    match result {
+        Ok(commit) => {
+            progress.stop("Project created");
+            println!("Created {} from {}", destination.display(), source_input);
+            println!("Base template commit: {}", short_commit(&commit));
+            println!("Review the generated files, then commit them with git.");
+            Ok(())
+        }
+        Err(err) => {
+            progress.error("Creating project failed");
+            Err(err)
+        }
     }
-
-    let config = UplateConfig {
-        schema_version: 1,
-        source: parsed.into_config(ref_name.clone()),
-        base: BaseConfig {
-            commit: snapshot.commit.clone(),
-            ref_name,
-            tag: None,
-        },
-        current: CurrentConfig {
-            commit: snapshot.commit.clone(),
-            upgraded_at: None,
-        },
-        created_at: Utc::now(),
-    };
-    config.write_to(&destination)?;
-
-    println!("Created {} from {}", destination.display(), source_input);
-    println!("Base template commit: {}", short_commit(&snapshot.commit));
-    println!("Review the generated files, then commit them with git.");
-    Ok(())
 }
 
 fn adopt(source_arg: Option<String>, base_arg: Option<String>) -> Result<()> {
@@ -314,13 +333,12 @@ fn prompt_create_args(
         Some(value) => value,
         None => {
             let value: String = input("Destination directory")
-                .placeholder(".")
+                .placeholder(". (here)")
                 .default_input(".")
                 .interact()?;
             PathBuf::from(value)
         }
     };
-    outro("Ready to create project ✓")?;
     Ok((source, destination))
 }
 
