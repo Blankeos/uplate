@@ -54,11 +54,9 @@ fn create(source_arg: Option<String>, destination_arg: Option<PathBuf>) -> Resul
     };
     config.write_to(&destination)?;
 
-    git::add_all(&destination)?;
-    git::commit_all(&destination, "Initial commit from uplate")?;
-
     println!("Created {} from {}", destination.display(), source_input);
     println!("Base template commit: {}", short_commit(&snapshot.commit));
+    println!("Review the generated files, then commit them with git.");
     Ok(())
 }
 
