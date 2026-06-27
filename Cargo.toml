@@ -2,7 +2,7 @@
 name = "uplate"
 version = "0.1.0"
 edition = "2021"
-description = "Clone detached boilerplates and safely upgrade them with conservative 3-way merges."
+description = "CLI for initializing/upgrading boilerplates from git."
 license = "MIT"
 repository = "https://github.com/uplate/uplate"
 homepage = "https://github.com/uplate/uplate"

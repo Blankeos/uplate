@@ -1,7 +1,7 @@
 {
   "name": "uplate",
   "version": "0.1.0",
-  "description": "Clone detached boilerplates and safely upgrade them with conservative 3-way merges.",
+  "description": "CLI for initializing/upgrading boilerplates from git.",
   "main": "bin.js",
   "bin": {
     "uplate": "./bin.js"
